@@ -20,6 +20,21 @@ const Tickets = () => {
   const navigation = useNavigation();
   const [ticketList, setTicketList] = React.useState([]);
 
+  const [currentUser, setCurrentUser] = React.useState(null);
+  /**
+   * Kullanıcıyı getir yetkilerine bakmak için
+   */
+  const getUser = async () => {
+    const userId = auth.currentUser.uid;
+
+    const userRef = collection(db, 'users');
+    const q = query(userRef, where('user_id', '==', userId));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      setCurrentUser(doc.data());
+    });
+  };
+
   /**
    * ticketları listelemek için kullanılan fonksiyon
    */
@@ -70,6 +85,7 @@ const Tickets = () => {
      * bu sayfa açıldığında ticketları listelemek için kullanılan fonksiyon
      */
     getTickets();
+    getUser();
   }, []);
 
   return (
@@ -87,7 +103,11 @@ const Tickets = () => {
 
             return (
               <TouchableOpacity
-                onPress={() => navigation.navigate('TicketDetail', item)}
+                onPress={() => {
+                  if (currentUser.read) {
+                    navigation.navigate('TicketDetail', item);
+                  }
+                }}
               >
                 <View className="flex flex-row justify-between items-center border-b border-gray-400 pb-1 mb-3">
                   <View>
@@ -100,17 +120,20 @@ const Tickets = () => {
                   </View>
                   <View className="flex flex-row items-center space-x-6">
                     <FontAwesome5 name="glasses" size={24} color="black" />
-                    <TouchableOpacity
-                      onPress={() =>
-                        ticketConfirmation(item.id, item.ticket_case)
-                      }
-                    >
-                      {item.ticket_case ? (
-                        <AntDesign name="close" size={24} color="black" />
-                      ) : (
-                        <FontAwesome5 name="check" size={24} color="black" />
-                      )}
-                    </TouchableOpacity>
+
+                    {currentUser.write && currentUser.delete && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          ticketConfirmation(item.id, item.ticket_case)
+                        }
+                      >
+                        {item.ticket_case ? (
+                          <AntDesign name="close" size={24} color="black" />
+                        ) : (
+                          <FontAwesome5 name="check" size={24} color="black" />
+                        )}
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </View>
               </TouchableOpacity>

@@ -40,7 +40,6 @@ const CustomerList = () => {
     });
   };
 
-  console.log(currentUser);
   /**
    *
    * silme işlemi için kullanılan fonksiyon
@@ -130,18 +129,20 @@ const CustomerList = () => {
                         <FontAwesome name="pencil" size={30} color="primary" />
                       </TouchableOpacity>
                     )}
+                    {currentUser?.read && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate('OnlyCustomerNotes', { item })
+                        }
+                      >
+                        <Foundation
+                          name="clipboard-notes"
+                          size={24}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                    )}
 
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate('OnlyCustomerNotes', { item })
-                      }
-                    >
-                      <Foundation
-                        name="clipboard-notes"
-                        size={24}
-                        color="black"
-                      />
-                    </TouchableOpacity>
                     {currentUser?.read && (
                       <TouchableOpacity
                         onPress={() =>

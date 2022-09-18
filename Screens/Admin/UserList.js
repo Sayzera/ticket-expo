@@ -16,7 +16,7 @@ import {
   updateDoc,
   doc,
 } from 'firebase/firestore';
-import { db } from '../../utils/firebase';
+import { auth, db } from '../../utils/firebase';
 import { AntDesign, Entypo, Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -24,6 +24,21 @@ import { useNavigation } from '@react-navigation/native';
 const UserList = () => {
   const navigation = useNavigation();
   const [customers, setCustomers] = React.useState([]);
+
+  const [currentUser, setCurrentUser] = React.useState(null);
+  /**
+   * Kullanıcıyı getir yetkilerine bakmak için
+   */
+  const getUser = async () => {
+    const userId = auth.currentUser.uid;
+
+    const userRef = collection(db, 'users');
+    const q = query(userRef, where('user_id', '==', userId));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      setCurrentUser(doc.data());
+    });
+  };
 
   const delteCustomerWithId = async (itemId, isActive) => {
     const docRef = doc(db, 'users', itemId);
@@ -53,6 +68,7 @@ const UserList = () => {
   };
 
   React.useEffect(() => {
+    getUser();
     navigation.addListener('focus', () => {
       console.log('work');
       getCustomerList();
@@ -83,35 +99,43 @@ const UserList = () => {
                     <Text className="text-lg">{item.full_name}</Text>
                   </View>
                   <View className="flex flex-row space-x-4 items-center">
-                    <TouchableOpacity
-                      onPress={() =>
-                        delteCustomerWithId(item.id, item.isActive)
-                      }
-                    >
-                      {item.isActive ? (
-                        <AntDesign name="delete" size={24} color="red" />
-                      ) : (
-                        <Entypo name="block" size={24} color="red" />
-                      )}
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate('UpdateUser', { item })
-                      }
-                    >
-                      <FontAwesome name="pencil" size={30} color="primary" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate('CustomerDetail', { item })
-                      }
-                    >
-                      <FontAwesome
-                        name="long-arrow-right"
-                        size={30}
-                        color="black"
-                      />
-                    </TouchableOpacity>
+                    {currentUser && currentUser.delete && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          delteCustomerWithId(item.id, item.isActive)
+                        }
+                      >
+                        {item.isActive ? (
+                          <AntDesign name="delete" size={24} color="red" />
+                        ) : (
+                          <Entypo name="block" size={24} color="red" />
+                        )}
+                      </TouchableOpacity>
+                    )}
+
+                    {currentUser && currentUser.write && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate('UpdateUser', { item })
+                        }
+                      >
+                        <FontAwesome name="pencil" size={30} color="primary" />
+                      </TouchableOpacity>
+                    )}
+
+                    {currentUser && currentUser.read && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate('CustomerDetail', { item })
+                        }
+                      >
+                        <FontAwesome
+                          name="long-arrow-right"
+                          size={30}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </View>
               )}

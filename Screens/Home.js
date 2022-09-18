@@ -15,6 +15,21 @@ const Home = () => {
   const user = auth.currentUser;
   const userId = user.uid;
 
+  const [currentUser, setCurrentUser] = React.useState(null);
+  /**
+   * Kullanıcıyı getir yetkilerine bakmak için
+   */
+  const getUser = async () => {
+    const userId = auth.currentUser.uid;
+
+    const userRef = collection(db, 'users');
+    const q = query(userRef, where('user_id', '==', userId));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      setCurrentUser(doc.data());
+    });
+  };
+
   const handleUserType = async () => {
     const q = query(collection(db, 'users'), where('user_id', '==', userId));
     const querySnapshot = await getDocs(q);
@@ -24,6 +39,7 @@ const Home = () => {
   };
   React.useEffect(() => {
     handleUserType();
+    getUser();
   }, []);
 
   const navigation = useNavigation();
@@ -63,15 +79,29 @@ const Home = () => {
                 <Text className="text-xl">Update Customer</Text>
               </TouchableOpacity>
             </View> */}
-            <View className="w-100">
-              <TouchableOpacity
-                onPress={() => navigation.navigate('AddCustomer')}
-                className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
-              >
-                <AntDesign name="adduser" size={30} color="gray" />
-                <Text className="text-xl">Add Customer</Text>
-              </TouchableOpacity>
-            </View>
+            {currentUser && currentUser.write && (
+              <>
+                <View className="w-100">
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('AddCustomer')}
+                    className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
+                  >
+                    <AntDesign name="adduser" size={30} color="gray" />
+                    <Text className="text-xl">Add Customer</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View className="w-100">
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('AddUser')}
+                    className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
+                  >
+                    <AntDesign name="adduser" size={30} color="gray" />
+                    <Text className="text-xl">Add User</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
 
             <View className="w-100">
               <TouchableOpacity
@@ -83,15 +113,6 @@ const Home = () => {
               </TouchableOpacity>
             </View>
 
-            <View className="w-100">
-              <TouchableOpacity
-                onPress={() => navigation.navigate('AddUser')}
-                className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
-              >
-                <AntDesign name="adduser" size={30} color="gray" />
-                <Text className="text-xl">Add User</Text>
-              </TouchableOpacity>
-            </View>
             {/* <View className="w-100">
               <TouchableOpacity
                 onPress={() => navigation.navigate('DeleteCustomer')}
@@ -110,15 +131,18 @@ const Home = () => {
                 <Text className="text-xl">Tickets</Text>
               </TouchableOpacity>
             </View>
-            <View className="w-100">
-              <TouchableOpacity
-                onPress={() => navigation.navigate('OpenTicket')}
-                className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
-              >
-                <Entypo name="ticket" size={30} color="gray" />
-                <Text className="text-xl">Create Ticket</Text>
-              </TouchableOpacity>
-            </View>
+
+            {currentUser && currentUser.write && (
+              <View className="w-100">
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('OpenTicket')}
+                  className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
+                >
+                  <Entypo name="ticket" size={30} color="gray" />
+                  <Text className="text-xl">Create Ticket</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </>
         ) : (
           <>
