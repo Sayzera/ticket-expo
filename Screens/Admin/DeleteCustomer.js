@@ -28,6 +28,9 @@ const DeleteCustomer = () => {
   const navigation = useNavigation();
   const [customers, setCustomers] = React.useState([]);
   const [error, setError] = React.useState('');
+  /**
+   * kullanıcıları listelemek için kullanılan fonksiyon
+   */
   const getCustomerList = async () => {
     const q = query(collection(db, 'users'));
     const querySnapshot = await getDocs(q);
@@ -40,6 +43,9 @@ const DeleteCustomer = () => {
     });
   };
 
+  /**
+   * kullanıcıyı silmek için kullanılan fonksiyon
+   */
   const delteCustomerWithId = async (itemId, isActive) => {
     const docRef = doc(db, 'users', itemId);
 

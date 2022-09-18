@@ -18,6 +18,9 @@ const UpdateCustomerList = ({ route }) => {
   const navigation = useNavigation();
   const [customers, setCustomers] = React.useState([]);
 
+  /**
+   * kullanıcıları listelemek için kullanılan fonksiyon
+   */
   const getCustomerList = async () => {
     const q = query(collection(db, 'users'));
     const querySnapshot = await getDocs(q);

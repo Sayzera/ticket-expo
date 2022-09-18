@@ -44,7 +44,17 @@ const Home = () => {
                 <Text className="text-xl">Customers</Text>
               </TouchableOpacity>
             </View>
+
             <View className="w-100">
+              <TouchableOpacity
+                onPress={() => navigation.navigate('UserList')}
+                className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
+              >
+                <FontAwesome5 name="user-cog" size={30} color="gray" />
+                <Text className="text-xl">Users</Text>
+              </TouchableOpacity>
+            </View>
+            {/* <View className="w-100">
               <TouchableOpacity
                 onPress={() => navigation.navigate('UpdateCustomerList')}
                 className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
@@ -52,7 +62,7 @@ const Home = () => {
                 <FontAwesome5 name="user-edit" size={30} color="gray" />
                 <Text className="text-xl">Update Customer</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
             <View className="w-100">
               <TouchableOpacity
                 onPress={() => navigation.navigate('AddCustomer')}
@@ -62,7 +72,27 @@ const Home = () => {
                 <Text className="text-xl">Add Customer</Text>
               </TouchableOpacity>
             </View>
+
             <View className="w-100">
+              <TouchableOpacity
+                onPress={() => navigation.navigate('MyNotes')}
+                className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
+              >
+                <FontAwesome5 name="pen" size={30} color="gray" />
+                <Text className="text-xl">Notes</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View className="w-100">
+              <TouchableOpacity
+                onPress={() => navigation.navigate('AddUser')}
+                className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
+              >
+                <AntDesign name="adduser" size={30} color="gray" />
+                <Text className="text-xl">Add User</Text>
+              </TouchableOpacity>
+            </View>
+            {/* <View className="w-100">
               <TouchableOpacity
                 onPress={() => navigation.navigate('DeleteCustomer')}
                 className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
@@ -70,7 +100,7 @@ const Home = () => {
                 <AntDesign name="deleteuser" size={30} color="gray" />
                 <Text className="text-xl">Delete Customer</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
             <View className="w-100">
               <TouchableOpacity
                 onPress={() => navigation.navigate('Tickets')}
@@ -108,6 +138,15 @@ const Home = () => {
               >
                 <Entypo name="ticket" size={30} color="gray" />
                 <Text className="text-xl">Create Ticket</Text>
+              </TouchableOpacity>
+            </View>
+            <View className="w-100">
+              <TouchableOpacity
+                onPress={() => navigation.navigate('MyNotes')}
+                className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
+              >
+                <FontAwesome5 name="pen" size={30} color="gray" />
+                <Text className="text-xl">Notes</Text>
               </TouchableOpacity>
             </View>
           </>

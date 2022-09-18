@@ -2,90 +2,78 @@ import { View, Text, SafeAreaView } from 'react-native';
 import React from 'react';
 import Back from '../../components/Back';
 import Header from '../../components/Header';
-import { Button, TextInput } from 'react-native-paper';
+import { Button, Checkbox, TextInput } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
-import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { app, auth, db } from '../../utils/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
-const UpdateCustomer = ({ route }) => {
-  const { item } = route.params;
-
-  /**
-   * React hook form ile formu kontrol ediyoruz
-   */
+const AddUser = () => {
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     defaultValues: {},
   });
-  /**
-   * güncelleme işlemini yapacak fonksiyon
-   */
+
   const onSubmit = (data) => {
-    updateUser(data);
+    registerUser(data);
   };
 
-  React.useEffect(() => {
-    /**
-     * güncelleme ekranına gelen verileri formda göstermek için kullanıyoruz
-     */
-    reset({
-      firstName: item.full_name,
-      email: item.email,
-      phone: item.phone,
-      address: item.address,
-      device_brand: item.device_brand,
-      ip: item.ip,
-      password: item.password,
-    });
-  }, []);
-
-  const [error, setError] = React.useState({});
-
   /**
-   *  güncelleme işlemini yapacak fonksiyon
+   * Kullanıcı kayıt işlemini yapacak fonksiyon
    */
-  const updateUser = async (data) => {
-    const docRef = doc(db, 'users', item.id);
-    try {
-      await updateDoc(docRef, {
-        full_name: data.firstName,
-        email: data.email,
-        phone: data.phone,
-        address: data.address,
-        device_brand: data.device_brand,
-        ip: data.ip,
+  const [read, setRead] = React.useState(false);
+  const [del, setDelete] = React.useState(false);
+  const [write, setWrite] = React.useState(false);
+
+  const [error, setError] = React.useState(null);
+
+  const registerUser = async (data) => {
+    data.read = read;
+    data.write = write;
+    data.delete = del;
+
+    /**
+     * Kullanıcıyı firebase auth ile kayıt ediyoruz sonrasında firestore'a kayıt ediyoruz
+     * firestore'a kayıt ederken kullanıcıya ait verileri de ekliyoruz
+     */
+
+    createUserWithEmailAndPassword(auth, data.email, data.password)
+      .then((user) => {
+        const docRef = addDoc(collection(db, 'users'), {
+          address: data.address,
+          email: data.email,
+          full_name: data.firstName,
+          ip: data.ip,
+          phone: data.phone,
+          device_brand: data.device_brand,
+          password: data.password,
+          user_id: user.user.uid,
+          isActive: true,
+          isAdmin: true,
+          userType: 'user',
+          read: data.read,
+          write: data.write,
+          delete: data.delete,
+        }).then((data) => {
+          console.log('Document written with ID2: ', data.id);
+        });
+      })
+      .catch((err) => {
+        setError(err.message);
+        console.log(err.code);
       });
-      setError({
-        message: 'User updated successfully',
-        status: true,
-      });
-    } catch (e) {
-      setError({
-        message: e.message,
-        status: false,
-      });
-      console.error('Error updating document: ', e);
-    }
   };
 
   return (
     <SafeAreaView className="bg-white flex-1">
       <Back />
-      <Header title={'Update ' + item.full_name}>
+      <Header title="Add User">
         {error !== null && (
           <View>
-            <Text
-              className={`${
-                error.status ? 'text-green-500' : 'text-red-500'
-              } my-2 text-lg`}
-            >
-              {error.message}
-            </Text>
+            <Text className="text-red-500 my-2 text-lg">{error}</Text>
           </View>
         )}
         <Controller
@@ -216,6 +204,61 @@ const UpdateCustomer = ({ route }) => {
           <Text className="text-red-500 my-2">This is required.</Text>
         )}
 
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <>
+              <TextInput
+                mode="outlined"
+                label={'Password'}
+                onChangeText={onChange}
+                value={value}
+              />
+            </>
+          )}
+          name="password"
+        />
+        {errors.password && errors.password.type == 'required' && (
+          <Text className="text-red-500 my-2">This is required.</Text>
+        )}
+
+        <View className="flex flex-col items-center border mt-2 border-gray-400 p-2 rounded">
+          <View>
+            <Text className="text-xl mt-2">Select Role</Text>
+          </View>
+          <View className="flex flex-row items-center space-x-3">
+            <View>
+              <Checkbox
+                status={read ? 'checked' : 'indeterminate'}
+                onPress={() => {
+                  setRead(!read);
+                }}
+              />
+              <Text>Read</Text>
+            </View>
+            <View>
+              <Checkbox
+                status={del ? 'checked' : 'indeterminate'}
+                onPress={() => {
+                  setDelete(!del);
+                }}
+              />
+              <Text>Delete</Text>
+            </View>
+            <View>
+              <Checkbox
+                status={write ? 'checked' : 'indeterminate'}
+                onPress={() => {
+                  setWrite(!write);
+                }}
+              />
+              <Text>Write</Text>
+            </View>
+          </View>
+        </View>
         <Button
           mode="outlined"
           className="mt-4"
@@ -225,11 +268,11 @@ const UpdateCustomer = ({ route }) => {
             paddingVertical: 4,
           }}
         >
-          Update To {item.full_name}
+          Register
         </Button>
       </Header>
     </SafeAreaView>
   );
 };
 
-export default UpdateCustomer;
+export default AddUser;

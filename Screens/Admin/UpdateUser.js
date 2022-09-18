@@ -2,18 +2,23 @@ import { View, Text, SafeAreaView } from 'react-native';
 import React from 'react';
 import Back from '../../components/Back';
 import Header from '../../components/Header';
-import { Button, TextInput } from 'react-native-paper';
+import { Button, Checkbox, TextInput } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { app, auth, db } from '../../utils/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
-const UpdateCustomer = ({ route }) => {
+const UpdateUser = ({ route }) => {
+  // güncelleme ekranına gelen verileri alıyoruz
   const { item } = route.params;
 
-  /**
-   * React hook form ile formu kontrol ediyoruz
-   */
+  // state tanımlamaları
+  const [read, setRead] = React.useState(false);
+  const [del, setDelete] = React.useState(false);
+  const [write, setWrite] = React.useState(false);
+
+  // react hook form ile formu kontrol ediyoruz
+
   const {
     control,
     handleSubmit,
@@ -22,17 +27,14 @@ const UpdateCustomer = ({ route }) => {
   } = useForm({
     defaultValues: {},
   });
-  /**
-   * güncelleme işlemini yapacak fonksiyon
-   */
+
+  // güncelleme işlemini yapacak fonksiyon
   const onSubmit = (data) => {
     updateUser(data);
   };
 
   React.useEffect(() => {
-    /**
-     * güncelleme ekranına gelen verileri formda göstermek için kullanıyoruz
-     */
+    // güncelleme ekranına gelen verileri formda göstermek için kullanıyoruz
     reset({
       firstName: item.full_name,
       email: item.email,
@@ -42,16 +44,18 @@ const UpdateCustomer = ({ route }) => {
       ip: item.ip,
       password: item.password,
     });
+    setRead(item.read);
+    setWrite(item.write);
+    setDelete(item.delete);
   }, []);
 
   const [error, setError] = React.useState({});
 
-  /**
-   *  güncelleme işlemini yapacak fonksiyon
-   */
+  // güncelleme işlemini yapacak fonksiyon
   const updateUser = async (data) => {
     const docRef = doc(db, 'users', item.id);
     try {
+      // Güncellenecek verileri alıyoruz ve güncelliyoruz
       await updateDoc(docRef, {
         full_name: data.firstName,
         email: data.email,
@@ -59,6 +63,9 @@ const UpdateCustomer = ({ route }) => {
         address: data.address,
         device_brand: data.device_brand,
         ip: data.ip,
+        read: read,
+        write: write,
+        delete: del,
       });
       setError({
         message: 'User updated successfully',
@@ -216,6 +223,41 @@ const UpdateCustomer = ({ route }) => {
           <Text className="text-red-500 my-2">This is required.</Text>
         )}
 
+        <View className="flex flex-col items-center border mt-2 border-gray-400 p-2 rounded">
+          <View>
+            <Text className="text-xl mt-2">Change the role</Text>
+          </View>
+          <View className="flex flex-row items-center space-x-3">
+            <View>
+              <Checkbox
+                status={read ? 'checked' : 'indeterminate'}
+                onPress={() => {
+                  setRead(!read);
+                }}
+              />
+              <Text>Read</Text>
+            </View>
+            <View>
+              <Checkbox
+                status={del ? 'checked' : 'indeterminate'}
+                onPress={() => {
+                  setDelete(!del);
+                }}
+              />
+              <Text>Delete</Text>
+            </View>
+            <View>
+              <Checkbox
+                status={write ? 'checked' : 'indeterminate'}
+                onPress={() => {
+                  setWrite(!write);
+                }}
+              />
+              <Text>Write</Text>
+            </View>
+          </View>
+        </View>
+
         <Button
           mode="outlined"
           className="mt-4"
@@ -232,4 +274,4 @@ const UpdateCustomer = ({ route }) => {
   );
 };
 
-export default UpdateCustomer;
+export default UpdateUser;

@@ -9,6 +9,9 @@ import { app, auth, db } from '../../utils/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const AddCustomer = () => {
+  /**
+   * React hook form ile formu kontrol ediyoruz
+   */
   const {
     control,
     handleSubmit,
@@ -17,12 +20,21 @@ const AddCustomer = () => {
     defaultValues: {},
   });
 
+  /**
+   * Kullanıcı kayıt işlemini yapacak fonksiyon
+   *
+   */
   const onSubmit = (data) => {
     registerUser(data);
   };
 
   const [error, setError] = React.useState(null);
 
+  /**
+   *
+   * Kullanıcı kayıt işlemini yapacak fonksiyon
+   * burada usertype değeri customer olarak gönderiyoruz
+   */
   const registerUser = async (data) => {
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then((user) => {
@@ -37,6 +49,10 @@ const AddCustomer = () => {
           user_id: user.user.uid,
           isActive: true,
           isAdmin: false,
+          userType: 'customer',
+          read: false,
+          write: false,
+          delete: false,
         }).then((data) => {
           console.log('Document written with ID2: ', data.id);
         });

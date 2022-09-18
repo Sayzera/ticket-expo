@@ -76,7 +76,11 @@ const UserTickets = () => {
                     <Text>Date: {normalDate}</Text>
                   </View>
                   <View>
-                    <FontAwesome5 name="glasses" size={24} color="black" />
+                    <FontAwesome5
+                      name={item.ticket_case ? 'check' : 'glasses'}
+                      size={24}
+                      color="black"
+                    />
                   </View>
                 </View>
               </TouchableOpacity>

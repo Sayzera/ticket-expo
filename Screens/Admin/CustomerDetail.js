@@ -7,7 +7,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 
 const CustomerDetail = ({ route }) => {
-  // get params
+  /**
+   * gelen parametreyi alıyoruz içerisinde kullanıcın bilgileri var ve ekrana basıyoruz
+   */
   const { item } = route.params;
 
   // console.log(item);
