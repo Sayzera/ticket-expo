@@ -154,7 +154,7 @@ const TicketDetail = () => {
         <View className="border border-gray-400 p-3 rounded shadow-md">
           <Text className="mb-1">Ticket ID: {params.id}</Text>
           <Text className="mb-1">Subject: {params.title}</Text>
-          <Text className="mb-1">Description: {params.title}</Text>
+          <Text className="mb-1">Description: {params.description}</Text>
           <Text className="mb-1">Date: {normalDate} </Text>
           <Text className="mb-1">Device: {params.device}</Text>
           <Text className="mb-1">Phone: {params.phone}</Text>

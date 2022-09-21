@@ -132,6 +132,16 @@ const Home = () => {
               </TouchableOpacity>
             </View>
 
+            <View className="w-100">
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ChangePassword')}
+                className="flex flex-row items-center border-b border-gray-200 space-x-2 py-4 px-2"
+              >
+                <Entypo name="user" size={30} color="gray" />
+                <Text className="text-xl">Profile</Text>
+              </TouchableOpacity>
+            </View>
+
             {currentUser && currentUser.write && (
               <View className="w-100">
                 <TouchableOpacity

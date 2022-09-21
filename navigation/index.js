@@ -20,6 +20,7 @@ import UpdateUser from '../Screens/Admin/UpdateUser';
 import MyNotes from '../Screens/MyNotes';
 import UpdateNote from '../Screens/Admin/UpdateNote';
 import OnlyCustomerNotes from '../Screens/Admin/OnlyCustomerNotes';
+import ChangePassword from '../Screens/ChangePassword';
 
 const index = () => {
   const Stack = createNativeStackNavigator();
@@ -59,6 +60,10 @@ const index = () => {
         <Stack.Screen
           name="OnlyCustomerNotes"
           component={OnlyCustomerNotes}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="ChangePassword"
+          component={ChangePassword}
         ></Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

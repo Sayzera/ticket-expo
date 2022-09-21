@@ -9,9 +9,11 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from 'firebase/auth';
-import { auth } from '../utils/firebase';
+import { auth, db } from '../utils/firebase';
 import { useNavigation } from '@react-navigation/native';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 const Login = () => {
   /**
@@ -43,9 +45,24 @@ const Login = () => {
     /**
      * Eğer kullanıcı varsa anasayfaya yönlendiriyoruz
      */
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        console.log(user.uid);
+        const userRef = collection(db, 'users');
+        const q = query(userRef, where('user_id', '==', user.uid));
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          if (doc.data().isActive != true) {
+            alert('You are not authorized to login');
+            signOut();
+          } else {
+            navigation.navigate('Home');
+          }
+        });
+
         navigation.navigate('Home');
+        //  navigation.navigate('Home');
       }
     });
 
@@ -95,6 +112,7 @@ const Login = () => {
         <TextInput
           mode="outlined"
           label="Password"
+          secureTextEntry={true}
           onChangeText={(text) => setPassword(text.trim())}
         />
 

@@ -216,6 +216,7 @@ const AddUser = () => {
                 label={'Password'}
                 onChangeText={onChange}
                 value={value}
+                secureTextEntry={true}
               />
             </>
           )}
